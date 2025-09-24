@@ -22,6 +22,8 @@ const {
   GET_FULL_COURSE_DETAILS_AUTHENTICATED,
   CREATE_RATING_API,
   LECTURE_COMPLETION_API,
+  ADD_RESOURCE_TO_SUBSECTION_API,
+  DELETE_RESOURCE_FROM_SUBSECTION_API,
 } = courseEndpoints;
 
 // ================ get All Courses ================
@@ -171,6 +173,7 @@ export const createSubSection = async (data, token) => {
 
   try {
     const response = await apiConnector("POST", CREATE_SUBSECTION_API, data, {
+      "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${token}`,
     });
     console.log("CREATE SUB-SECTION API RESPONSE............", response);
@@ -221,6 +224,7 @@ export const updateSubSection = async (data, token) => {
 
   try {
     const response = await apiConnector("POST", UPDATE_SUBSECTION_API, data, {
+      "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${token}`,
     });
     console.log("UPDATE SUB-SECTION API RESPONSE............", response);
@@ -411,4 +415,80 @@ export const createRating = async (data, token) => {
   }
   toast.dismiss(toastId);
   return success;
+};
+// Add resource to subsection
+export const addResourceToSubSection = async (data, token) => {
+  const toastId = toast.loading("Adding resource...");
+  try {
+    const response = await apiConnector(
+      "POST",
+      ADD_RESOURCE_TO_SUBSECTION_API,
+      data,
+      {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      }
+    );
+    console.log("ADD RESOURCE API RESPONSE............", response);
+    if (!response?.data?.success) {
+      throw new Error("Could not add resource");
+    }
+    toast.success("Resource added successfully");
+    return response.data.data;
+  } catch (error) {
+    console.log("ADD RESOURCE API ERROR............", error);
+    toast.error(error.message);
+    return null;
+  } finally {
+    toast.dismiss(toastId);
+  }
+};
+
+export const getSubSectionResources = async (subSectionId, token) => {
+  try {
+    const response = await apiConnector(
+      "GET",
+      `${courseEndpoints.GET_SUBSECTION_RESOURCES_API}/${subSectionId}`,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    );
+    console.log("GET SUBSECTION RESOURCES API RESPONSE............", response);
+    if (!response?.data?.success) {
+      throw new Error("Impossible de récupérer les ressources");
+    }
+
+    return response.data.data;
+  } catch (error) {
+    console.log("GET SUBSECTION RESOURCES API ERROR............", error);
+    return null;
+  }
+};
+
+// Delete resource from subsection
+export const deleteResourceFromSubSection = async (data, token) => {
+  const toastId = toast.loading("Deleting resource...");
+  try {
+    const response = await apiConnector(
+      "DELETE",
+      DELETE_RESOURCE_FROM_SUBSECTION_API,
+      data,
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    );
+    console.log("DELETE RESOURCE API RESPONSE............", response);
+    if (!response?.data?.success) {
+      throw new Error("Could not delete resource");
+    }
+    toast.success("Resource deleted successfully");
+    return response.data.data;
+  } catch (error) {
+    console.log("DELETE RESOURCE API ERROR............", error);
+    toast.error(error.message);
+    return null;
+  } finally {
+    toast.dismiss(toastId);
+  }
 };

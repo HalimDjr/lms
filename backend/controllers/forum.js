@@ -171,3 +171,246 @@ exports.deleteMessage = async (req, res) => {
     });
   }
 };
+
+// Liker/Unliker un message
+exports.toggleLikeMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const userId = req.user.id;
+
+    // Vérifier si le message existe
+    const message = await ForumMessage.findById(messageId);
+    if (!message) {
+      return res.status(404).json({
+        success: false,
+        message: "Message introuvable",
+      });
+    }
+
+    // Vérifier si l'utilisateur a déjà liké le message
+    const likeIndex = message.likes.indexOf(userId);
+
+    if (likeIndex === -1) {
+      // Si l'utilisateur n'a pas encore liké, ajouter son like
+      message.likes.push(userId);
+    } else {
+      // Si l'utilisateur a déjà liké, retirer son like
+      message.likes.splice(likeIndex, 1);
+    }
+
+    await message.save();
+
+    // Récupérer le message mis à jour avec les informations de l'utilisateur
+    const updatedMessage = await ForumMessage.findById(messageId)
+      .populate({
+        path: "user",
+        select: "firstName lastName image accountType",
+      })
+      .populate({
+        path: "replies",
+        populate: {
+          path: "user",
+          select: "firstName lastName image accountType",
+        },
+      });
+
+    return res.status(200).json({
+      success: true,
+      data: updatedMessage,
+      message: likeIndex === -1 ? "Message liké" : "Like retiré",
+    });
+  } catch (error) {
+    console.error("Erreur lors du like/unlike du message:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Erreur lors du like/unlike du message",
+      error: error.message,
+    });
+  }
+};
+
+// Épingler/Désépingler un message
+exports.togglePinMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const user = req.user;
+
+    // Vérifier si l'utilisateur est un instructeur ou un admin
+    if (!["Admin", "Instructor"].includes(user.accountType)) {
+      return res.status(403).json({
+        success: false,
+        message: "Non autorisé à épingler des messages",
+      });
+    }
+
+    // Vérifier si le message existe
+    const message = await ForumMessage.findById(messageId);
+    if (!message) {
+      return res.status(404).json({
+        success: false,
+        message: "Message introuvable",
+      });
+    }
+
+    // Inverser l'état d'épinglage
+    message.isPinned = !message.isPinned;
+    await message.save();
+
+    // Récupérer le message mis à jour avec les informations de l'utilisateur
+    const updatedMessage = await ForumMessage.findById(messageId)
+      .populate({
+        path: "user",
+        select: "firstName lastName image accountType",
+      })
+      .populate({
+        path: "replies",
+        populate: {
+          path: "user",
+          select: "firstName lastName image accountType",
+        },
+      });
+
+    return res.status(200).json({
+      success: true,
+      data: updatedMessage,
+      message: message.isPinned ? "Message épinglé" : "Message désépinglé",
+    });
+  } catch (error) {
+    console.error("Erreur lors de l'épinglage/désépinglage du message:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Erreur lors de l'épinglage/désépinglage du message",
+      error: error.message,
+    });
+  }
+};
+
+// Marquer un message comme solution
+exports.toggleSolutionStatus = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const { subsectionId } = req.body;
+    const user = req.user;
+
+    // Vérifier si l'utilisateur est un instructeur ou un admin
+    if (!["Admin", "Instructor"].includes(user.accountType)) {
+      return res.status(403).json({
+        success: false,
+        message: "Non autorisé à marquer des solutions",
+      });
+    }
+
+    // Vérifier si le message existe
+    const message = await ForumMessage.findById(messageId);
+    if (!message) {
+      return res.status(404).json({
+        success: false,
+        message: "Message introuvable",
+      });
+    }
+
+    // Si on marque comme solution, retirer le statut de solution des autres messages
+    if (!message.isSolution) {
+      await ForumMessage.updateMany(
+        { subSection: subsectionId, isSolution: true },
+        { isSolution: false }
+      );
+    }
+
+    // Inverser le statut de solution
+    message.isSolution = !message.isSolution;
+    await message.save();
+
+    // Récupérer le message mis à jour avec les informations de l'utilisateur
+    const updatedMessage = await ForumMessage.findById(messageId)
+      .populate({
+        path: "user",
+        select: "firstName lastName image accountType",
+      })
+      .populate({
+        path: "replies",
+        populate: {
+          path: "user",
+          select: "firstName lastName image accountType",
+        },
+      });
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        messageId: message._id,
+        subsectionId,
+        message: updatedMessage,
+      },
+      message: message.isSolution
+        ? "Message marqué comme solution"
+        : "Statut de solution retiré",
+    });
+  } catch (error) {
+    console.error("Erreur lors du marquage comme solution:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Erreur lors du marquage comme solution",
+      error: error.message,
+    });
+  }
+};
+
+exports.updateMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const { content } = req.body;
+    const userId = req.user.id;
+
+    // Vérifier si le message existe
+    const message = await ForumMessage.findById(messageId);
+    if (!message) {
+      return res.status(404).json({
+        success: false,
+        message: "Message introuvable",
+      });
+    }
+
+    // Vérifier si l'utilisateur est le propriétaire du message ou un admin/instructeur
+    if (
+      message.user.toString() !== userId &&
+      !["Admin", "Instructor"].includes(req.user.accountType)
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "Non autorisé à modifier ce message",
+      });
+    }
+
+    // Mettre à jour le contenu du message
+    message.content = content;
+    await message.save();
+
+    // Récupérer le message mis à jour avec les informations de l'utilisateur
+    const updatedMessage = await ForumMessage.findById(messageId)
+      .populate({
+        path: "user",
+        select: "firstName lastName image accountType",
+      })
+      .populate({
+        path: "replies",
+        populate: {
+          path: "user",
+          select: "firstName lastName image accountType",
+        },
+      });
+
+    return res.status(200).json({
+      success: true,
+      data: updatedMessage,
+      message: "Message mis à jour avec succès",
+    });
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du message:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Erreur lors de la mise à jour du message",
+      error: error.message,
+    });
+  }
+};

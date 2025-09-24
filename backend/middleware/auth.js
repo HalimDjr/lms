@@ -131,3 +131,33 @@ exports.isAdmin = (req, res, next) => {
     });
   }
 };
+
+// ================ IS INSTRUCTOR OR ADMIN ================
+exports.isInstructorOrAdmin = (req, res, next) => {
+  try {
+    // console.log('User data -> ', req.user)
+    if (
+      req.user?.accountType !== "Instructor" &&
+      req.user?.accountType !== "Admin"
+    ) {
+      return res.status(401).json({
+        success: false,
+        message:
+          "Cette page est protégée et réservée aux instructeurs et administrateurs",
+      });
+    }
+    // go to next middleware
+    next();
+  } catch (error) {
+    console.log(
+      "Error while checking user validity with Instructor or Admin accountType"
+    );
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      message:
+        "Error while checking user validity with Instructor or Admin accountType",
+    });
+  }
+};

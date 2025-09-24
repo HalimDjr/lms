@@ -1,10 +1,16 @@
-import loginImg from "../assets/Images/login.png";
-import LoginForme from "../components/core/Auth/LoginForm";
+import React from "react";
+import LoginForm from "../components/core/Auth/LoginForm";
+import loginBg from "../assets/bg2.jpg";
 
 function Login() {
   return (
-    <div className="bg-blue-50">
-      <LoginForme />
+    <div
+      className="min-h-screen w-full bg-cover bg-center flex items-center justify-center p-4"
+      style={{ backgroundImage: `url(${loginBg})` }}
+    >
+      <div className="w-full max-w-5xl">
+        <LoginForm />
+      </div>
     </div>
   );
 }

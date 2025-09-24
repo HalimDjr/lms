@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { FiMail } from "react-icons/fi";
+import loginBg from "../assets/bg2.jpg";
 
 import { getPasswordResetToken } from "../services/operations/authAPI";
 
@@ -17,62 +20,110 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="grid min-h-[calc(100vh-3.5rem)] place-items-center">
+    <div
+      className="min-h-screen w-full bg-cover bg-center flex items-center justify-center p-4"
+      style={{ backgroundImage: `url(${loginBg})` }}
+    >
       {loading ? (
-        <div className="spinner"></div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex flex-col items-center bg-black/40 backdrop-blur-sm p-6 rounded-xl"
+        >
+          <div className="h-12 w-12 rounded-full border-4 border-t-transparent animate-spin border-white"></div>
+          <p className="mt-4 text-white">Chargement...</p>
+        </motion.div>
       ) : (
-        <div className="max-w-[500px] p-4 lg:p-8">
-          <h1 className="text-[1.875rem] font-semibold leading-[2.375rem] text-richblack-5">
-            {!emailSent ? "Reset your password" : "Check email"}
-          </h1>
-          <div className="my-4 text-[1.125rem] leading-[1.625rem] text-richblack-100">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-[500px] p-6 lg:p-10 rounded-2xl shadow-xl backdrop-blur-md bg-white/90 border border-gray-100"
+        >
+          <div className="flex items-center mb-6">
+            <div className="p-3 rounded-full mr-4 bg-blue-100">
+              <FiMail className="text-2xl text-blue-600" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-800">
+              {!emailSent
+                ? "Réinitialiser votre mot de passe"
+                : "Vérifiez votre email"}
+            </h1>
+          </div>
+
+          <div className="my-6 text-base leading-relaxed text-gray-600">
             {!emailSent ? (
-              "Have no fear. We'll email you instructions to reset your password. If you dont have access to your email we can try account recovery"
+              "Rassurez-vous. Nous vous enverrons par email les instructions pour réinitialiser votre mot de passe. Si vous n'avez pas accès à votre email, nous pouvons essayer la récupération de compte."
             ) : (
-              <p>
-                We have sent the reset email to{" "}
-                <span className="text-blue-200">{email}</span>
-              </p>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                Nous avons envoyé l'email de réinitialisation à{" "}
+                <span className="font-medium text-blue-600">{email}</span>
+              </motion.p>
             )}
           </div>
 
-          <form onSubmit={handleOnSubmit}>
+          <form onSubmit={handleOnSubmit} className="space-y-4">
             {!emailSent && (
-              <label className="w-full">
-                <p className="mb-1 text-[0.875rem] leading-[1.375rem] text-richblack-5">
-                  Email Address <sup className="text-pink-200">*</sup>
-                </p>
-                <input
-                  required
-                  type="email"
-                  name="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter email address"
-                  style={{
-                    boxShadow: "inset 0px -1px 0px rgba(255, 255, 255, 0.18)",
-                  }}
-                  className="w-full rounded-[0.5rem] bg-richblack-800 p-[12px] text-richblack-5 "
-                />
-              </label>
+              <div className="space-y-2">
+                <label className="block">
+                  <p className="mb-1 text-sm font-medium text-gray-700">
+                    Adresse Email <sup className="text-pink-500">*</sup>
+                  </p>
+                  <div className="relative rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
+                    <input
+                      required
+                      type="email"
+                      name="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Entrez votre adresse email"
+                      className="w-full p-3.5 pr-12 outline-none bg-gray-50 text-gray-900 border border-gray-200 rounded-lg transition-all duration-200"
+                    />
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <FiMail className="text-gray-400" />
+                    </div>
+                  </div>
+                </label>
+              </div>
             )}
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
-              className="mt-6 w-full rounded-[8px] bg-blue-100 py-[12px] px-[12px] font-medium text-richblack-900"
+              className="mt-6 w-full rounded-lg py-3.5 px-4 font-medium transition-all duration-200 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-lg"
             >
-              {!emailSent ? "Sumbit" : "Resend Email"}
-            </button>
+              {!emailSent ? "Envoyer les instructions" : "Renvoyer l'email"}
+            </motion.button>
           </form>
 
-          <div className="mt-6 flex items-center justify-between">
+          <div className="mt-8 flex items-center justify-between">
             <Link to="/login">
-              <p className="flex items-center gap-x-2 text-richblack-5">
-                <BiArrowBack /> Back To Login
-              </p>
+              <motion.div
+                whileHover={{ x: -3 }}
+                className="flex items-center gap-x-2 text-gray-700 hover:text-blue-600 transition-colors duration-200"
+              >
+                <BiArrowBack /> Retour à la connexion
+              </motion.div>
             </Link>
           </div>
-        </div>
+
+          {emailSent && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="mt-6 text-sm text-center text-gray-500"
+            >
+              Si vous ne recevez pas d'email dans les 5 minutes, vérifiez votre
+              dossier spam ou cliquez sur "Renvoyer l'email".
+            </motion.p>
+          )}
+        </motion.div>
       )}
     </div>
   );

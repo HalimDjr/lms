@@ -1,26 +1,28 @@
+// routes/forum.js
 const express = require("express");
 const router = express.Router();
 
 const {
   getForumMessages,
   createMessage,
+  updateMessage,
   deleteMessage,
+  toggleLikeMessage,
+  togglePinMessage,
+  toggleSolutionStatus,
 } = require("../controllers/forum");
 
 const { auth } = require("../middleware/auth");
 
-// Récupérer les messages d'une subsection
+// Routes existantes
 router.get("/messages/:subsectionId", auth, getForumMessages);
-
-// Créer un nouveau message
 router.post("/message", auth, createMessage);
-
-// Supprimer un message
+router.put("/message/:messageId", auth, updateMessage);
 router.delete("/message/:messageId", auth, deleteMessage);
 
-module.exports = router;
+// Nouvelles routes
+router.post("/message/like/:messageId", auth, toggleLikeMessage);
+router.post("/message/pin/:messageId", auth, togglePinMessage);
+router.post("/message/solution/:messageId", auth, toggleSolutionStatus);
 
-// Mise à jour du fichier server.js pour inclure les routes du forum
-// Ajouter après les autres routes:
-// const forumRoutes = require('./routes/forum');
-// app.use('/api/v1/forum', forumRoutes);
+module.exports = router;

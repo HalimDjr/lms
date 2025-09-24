@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 // Controllers
-const { signup, login, changePassword } = require("../controllers/auth");
+const { login, changePassword } = require("../controllers/auth");
 
 // Resetpassword controllers
 const {
@@ -13,14 +13,11 @@ const {
 // Middleware
 const { auth } = require("../middleware/auth");
 
-// Routes for Login, Signup, and Authentication
+// Routes for Login, and Authentication
 
 // ********************************************************************************************************
 //                                      Authentication routes
 // ********************************************************************************************************
-
-// Route for user signup
-router.post("/signup", signup);
 
 // Route for user login
 router.post("/login", login);

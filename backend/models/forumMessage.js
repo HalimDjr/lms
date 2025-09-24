@@ -1,3 +1,4 @@
+// models/forumMessage.js
 const mongoose = require("mongoose");
 
 const forumMessageSchema = new mongoose.Schema(
@@ -28,6 +29,20 @@ const forumMessageSchema = new mongoose.Schema(
         ref: "ForumMessage",
       },
     ],
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    isPinned: {
+      type: Boolean,
+      default: false,
+    },
+    isSolution: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

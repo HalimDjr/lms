@@ -51,7 +51,17 @@ const courseSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ["Draft", "Published"],
+    default: "Draft",
   },
+  finalQuiz: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Quiz",
+  },
+  isCertified: {
+    type: Boolean,
+    default: false,
+  },
+
   createdAt: {
     type: Date,
   },

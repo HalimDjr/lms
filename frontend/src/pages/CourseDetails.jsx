@@ -1,73 +1,98 @@
 import React, { useEffect, useState } from "react";
-import { BiInfoCircle } from "react-icons/bi";
-import { HiOutlineGlobeAlt } from "react-icons/hi";
-// import { ReactMarkdown } from "react-markdown/lib/react-markdown"
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
+// Icons
+import { BiBook, BiInfoCircle, BiUser } from "react-icons/bi";
+import {
+  FaChalkboardTeacher,
+  FaRegClock,
+  FaTags,
+  FaBookmark,
+  FaRegBookmark,
+  FaShare,
+} from "react-icons/fa";
+import { GiReturnArrow } from "react-icons/gi";
+import {
+  MdOutlineVerified,
+  MdOutlinePlayLesson,
+  MdOutlineWbSunny,
+} from "react-icons/md";
+import { HiOutlineMoon } from "react-icons/hi";
+
+// Components
 import ConfirmationModal from "../components/common/ConfirmationModal";
 import Footer from "../components/common/Footer";
 import RatingStars from "../components/common/RatingStars";
 import CourseAccordionBar from "../components/core/Course/CourseAccordionBar";
-import CourseDetailsCard from "../components/core/Course/CourseDetailsCard";
+import Img from "./../components/common/Img";
+
+// Services & Utils
 import { formatDate } from "../services/formatDate";
 import { fetchCourseDetails } from "../services/operations/courseDetailsAPI";
-
 import { enrollFreeCourse } from "../services/operations/studentFeaturesAPI";
-
 import GetAvgRating from "../utils/avgRating";
-import { ACCOUNT_TYPE } from "./../utils/constants";
-
-import { GiReturnArrow } from "react-icons/gi";
-import { MdOutlineVerified } from "react-icons/md";
-import Img from "./../components/common/Img";
 import toast from "react-hot-toast";
 
 function CourseDetails() {
+  // Redux state
   const { user } = useSelector((state) => state.profile);
   const { token } = useSelector((state) => state.auth);
   const { loading } = useSelector((state) => state.profile);
   const { paymentLoading } = useSelector((state) => state.course);
+  const { darkMode } = useSelector((state) => state.theme) || {
+    darkMode: true,
+  };
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  // Getting courseId from url parameter
   const { courseId } = useParams();
-  // console.log(`course id: ${courseId}`)
 
-  // Declear a state to save the course details
+  // Local state
   const [response, setResponse] = useState(null);
   const [confirmationModal, setConfirmationModal] = useState(null);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [showShareOptions, setShowShareOptions] = useState(false);
+  const [avgReviewCount, setAvgReviewCount] = useState(0);
+  const [isActive, setIsActive] = useState([]);
+  const [totalNoOfLectures, setTotalNoOfLectures] = useState(0);
 
+  // Fetch course details
   useEffect(() => {
-    // Calling fetchCourseDetails fucntion to fetch the details
-    const fectchCourseDetailsData = async () => {
+    const fetchCourseDetailsData = async () => {
       try {
         const res = await fetchCourseDetails(courseId);
-        // console.log("course details res: ", res)
         setResponse(res);
       } catch (error) {
-        console.log("Could not fetch Course Details");
+        toast.error("Impossible de charger les détails du cours");
       }
     };
-    fectchCourseDetailsData();
+    fetchCourseDetailsData();
+    window.scrollTo(0, 0);
   }, [courseId]);
 
-  // console.log("response: ", response)
-
-  // Calculating Avg Review count
-  const [avgReviewCount, setAvgReviewCount] = useState(0);
+  // Calculate average rating
   useEffect(() => {
-    const count = GetAvgRating(response?.data?.courseDetails.ratingAndReviews);
-    setAvgReviewCount(count);
+    if (response?.data?.courseDetails?.ratingAndReviews) {
+      const count = GetAvgRating(response.data.courseDetails.ratingAndReviews);
+      setAvgReviewCount(count);
+    }
   }, [response]);
-  // console.log("avgReviewCount: ", avgReviewCount)
 
-  // Collapse all
-  // const [collapse, setCollapse] = useState("")
-  const [isActive, setIsActive] = useState(Array(0));
+  // Calculate total lectures
+  useEffect(() => {
+    if (response?.data?.courseDetails?.courseContent) {
+      let lectures = 0;
+      response.data.courseDetails.courseContent.forEach((sec) => {
+        lectures += sec.subSection.length || 0;
+      });
+      setTotalNoOfLectures(lectures);
+    }
+  }, [response]);
+
+  // Handle accordion toggle
   const handleActive = (id) => {
-    // console.log("called", id)
     setIsActive(
       !isActive.includes(id)
         ? isActive.concat([id])
@@ -75,48 +100,79 @@ function CourseDetails() {
     );
   };
 
-  // Total number of lectures
-  const [totalNoOfLectures, setTotalNoOfLectures] = useState(0);
-  useEffect(() => {
-    let lectures = 0;
-    response?.data?.courseDetails?.courseContent?.forEach((sec) => {
-      lectures += sec.subSection.length || 0;
-    });
-    setTotalNoOfLectures(lectures);
-  }, [response]);
+  // Toggle bookmark
+  const toggleBookmark = () => {
+    setIsBookmarked(!isBookmarked);
+    toast.success(isBookmarked ? "Retiré des favoris" : "Ajouté aux favoris");
+  };
 
-  // Scroll to the top of the page when the component mounts
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  // Handle share
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: response?.data?.courseDetails?.courseName,
+        text:
+          response?.data?.courseDetails?.courseDescription.substring(0, 100) +
+          "...",
+        url: window.location.href,
+      });
+    } else {
+      setShowShareOptions(!showShareOptions);
+    }
+  };
 
-  // Loading skeleton
+  // Copy link to clipboard
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success("Lien copié dans le presse-papier");
+    setShowShareOptions(false);
+  };
+
+  // Toggle theme
+  const toggleTheme = () => {
+    dispatch({ type: "TOGGLE_THEME" });
+  };
+
+  // Handle enrollment
+  const handleEnrollCourse = () => {
+    if (!token) {
+      setConfirmationModal({
+        text1: "Vous n'êtes pas connecté !",
+        text2: "Veuillez vous connecter pour vous inscrire au cours.",
+        btn1Text: "Se connecter",
+        btn2Text: "Annuler",
+        btn1Handler: () => navigate("/login"),
+        btn2Handler: () => setConfirmationModal(null),
+      });
+      return;
+    }
+
+    const coursesId = [courseId];
+    enrollFreeCourse(token, coursesId, user, navigate, dispatch);
+  };
+
+  // Loading state
   if (paymentLoading || loading || !response) {
     return (
-      <div className={`mt-24 p-5 flex flex-col justify-center gap-4  `}>
-        <div className="flex flex-col sm:flex-col-reverse  gap-4 ">
-          <p className="h-44 sm:h-24 sm:w-[60%] rounded-xl skeleton"></p>
-          <p className="h-9 sm:w-[39%] rounded-xl skeleton"></p>
-        </div>
-
-        <p className="h-4 w-[55%] lg:w-[25%] rounded-xl skeleton"></p>
-        <p className="h-4 w-[75%] lg:w-[30%] rounded-xl skeleton"></p>
-        <p className="h-4 w-[35%] lg:w-[10%] rounded-xl skeleton"></p>
-
-        {/* Floating Courses Card */}
+      <div
+        className={`min-h-screen ${
+          darkMode ? "bg-richblack-900" : "bg-gray-50"
+        } flex items-center justify-center`}
+      >
         <div
-          className="right-[1.5rem] top-[20%] hidden lg:block lg:absolute min-h-[450px] w-1/3 max-w-[410px] 
-            translate-y-24 md:translate-y-0 rounded-xl skeleton"
+          className="animate-spin h-12 w-12 border-4 rounded-full border-t-transparent border-b-transparent"
+          style={{
+            borderColor: darkMode
+              ? "#60A5FA #1E293B #1E293B"
+              : "#3B82F6 #E5E7EB #E5E7EB",
+          }}
         ></div>
-
-        <p className="mt-24 h-60 lg:w-[60%] rounded-xl skeleton"></p>
       </div>
     );
   }
 
-  // extract course data
+  // Extract course data
   const {
-    _id: course_id,
     courseName,
     courseDescription,
     thumbnail,
@@ -127,198 +183,509 @@ function CourseDetails() {
     studentsEnrolled,
     createdAt,
     tag,
-  } = response?.data?.courseDetails;
-
-  const handleEnrollCourse = () => {
-    if (token) {
-      const coursesId = [courseId];
-      enrollFreeCourse(token, coursesId, user, navigate, dispatch);
-      return;
-    }
-    setConfirmationModal({
-      text1: "You are not logged in!",
-      text2: "Please login to Purchase Course.",
-      btn1Text: "Login",
-      btn2Text: "Cancel",
-      btn1Handler: () => navigate("/login"),
-      btn2Handler: () => setConfirmationModal(null),
-    });
-  };
+  } = response.data.courseDetails;
 
   return (
-    <>
-      <div className={`relative w-full bg-richblack-800`}>
-        {/* Hero Section */}
-        <div className="mx-auto box-content px-4 lg:w-[1260px] 2xl:relative ">
-          <div className="mx-auto grid min-h-[450px] max-w-maxContentTab justify-items-cente py-8 lg:mx-0 lg:justify-items-start lg:py-0 xl:max-w-[810px]">
-            {/* Go back button */}
-            <div
-              className="mb-5 lg:mt-10 lg:mb-0 z-[100]  "
-              onClick={() => navigate(-1)}
+    <div
+      className={
+        darkMode ? "bg-richblack-900 text-white" : "bg-gray-50 text-gray-900"
+      }
+    >
+      {/* Theme Toggle Button */}
+      <motion.button
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        onClick={toggleTheme}
+        className={`fixed top-24 right-6 z-50 p-3 rounded-full shadow-lg ${
+          darkMode
+            ? "bg-yellow-50 text-richblack-900"
+            : "bg-richblack-800 text-yellow-50"
+        }`}
+        aria-label="Toggle theme"
+      >
+        {darkMode ? (
+          <MdOutlineWbSunny size={20} />
+        ) : (
+          <HiOutlineMoon size={20} />
+        )}
+      </motion.button>
+
+      {/* Hero Section */}
+      <div
+        className={`relative w-full ${
+          darkMode ? "bg-richblack-800" : "bg-blue-50"
+        } pt-8 pb-12`}
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          {/* Back Button */}
+          <div className="mb-6" onClick={() => navigate(-1)}>
+            <button
+              className={`flex items-center gap-2 ${
+                darkMode ? "text-blue-100" : "text-blue-600"
+              }`}
             >
-              <GiReturnArrow className="w-10 h-10 text-blue-100 hover:text-blue-50 cursor-pointer" />
+              <GiReturnArrow className="w-5 h-5" />
+              <span>Retour</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Course Info - Left Column */}
+            <div className="lg:col-span-2">
+              {/* Mobile Thumbnail */}
+              <div className="relative block lg:hidden mb-6">
+                <Img
+                  src={thumbnail}
+                  alt={courseName}
+                  className="w-full h-auto rounded-xl shadow-lg object-cover"
+                />
+              </div>
+
+              {/* Course Title and Actions */}
+              <div className="flex items-center gap-4 mb-4">
+                <h1
+                  className={`text-3xl md:text-4xl font-bold leading-tight flex-grow`}
+                >
+                  {courseName}
+                </h1>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={toggleBookmark}
+                    className={`p-2 rounded-full ${
+                      darkMode ? "bg-richblack-700" : "bg-white shadow-sm"
+                    }`}
+                  >
+                    {isBookmarked ? (
+                      <FaBookmark
+                        className={
+                          darkMode ? "text-yellow-50" : "text-blue-600"
+                        }
+                        size={18}
+                      />
+                    ) : (
+                      <FaRegBookmark
+                        className={
+                          darkMode ? "text-richblack-300" : "text-gray-500"
+                        }
+                        size={18}
+                      />
+                    )}
+                  </button>
+
+                  <div className="relative">
+                    <button
+                      onClick={handleShare}
+                      className={`p-2 rounded-full ${
+                        darkMode ? "bg-richblack-700" : "bg-white shadow-sm"
+                      }`}
+                    >
+                      <FaShare
+                        className={
+                          darkMode ? "text-richblack-300" : "text-gray-500"
+                        }
+                        size={18}
+                      />
+                    </button>
+
+                    <AnimatePresence>
+                      {showShareOptions && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          className={`absolute right-0 mt-2 p-3 rounded-lg shadow-lg z-10 ${
+                            darkMode ? "bg-richblack-700" : "bg-white"
+                          } border ${
+                            darkMode
+                              ? "border-richblack-600"
+                              : "border-gray-200"
+                          }`}
+                        >
+                          <button
+                            onClick={copyToClipboard}
+                            className={`whitespace-nowrap text-sm ${
+                              darkMode ? "text-richblack-100" : "text-gray-700"
+                            }`}
+                          >
+                            Copier le lien
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              </div>
+
+              {/* Course Description - Shortened */}
+              <p
+                className={`${
+                  darkMode ? "text-richblack-100" : "text-gray-700"
+                } mb-6`}
+              >
+                {courseDescription.length > 200
+                  ? `${courseDescription.substring(0, 200)}...`
+                  : courseDescription}
+              </p>
+
+              {/* Ratings and Stats */}
+              <div className="flex flex-wrap items-center gap-4 mb-6">
+                <div
+                  className={`flex items-center gap-2 ${
+                    darkMode ? "bg-richblack-700" : "bg-white shadow-sm"
+                  } px-3 py-1 rounded-full`}
+                >
+                  <span
+                    className={darkMode ? "text-yellow-50" : "text-blue-600"}
+                    font-semibold
+                  >
+                    {avgReviewCount}
+                  </span>
+                  <RatingStars Review_Count={avgReviewCount} Star_Size={16} />
+                  <span
+                    className={
+                      darkMode ? "text-richblack-300" : "text-gray-500"
+                    }
+                  >
+                    ({ratingAndReviews.length})
+                  </span>
+                </div>
+
+                <div
+                  className={`flex items-center gap-2 ${
+                    darkMode ? "bg-richblack-700" : "bg-white shadow-sm"
+                  } px-3 py-1 rounded-full`}
+                >
+                  <BiUser
+                    className={darkMode ? "text-blue-100" : "text-blue-600"}
+                  />
+                  <span>{studentsEnrolled.length} Apprenants</span>
+                </div>
+
+                <div
+                  className={`flex items-center gap-2 ${
+                    darkMode ? "bg-richblack-700" : "bg-white shadow-sm"
+                  } px-3 py-1 rounded-full`}
+                >
+                  <BiInfoCircle
+                    className={darkMode ? "text-blue-100" : "text-blue-600"}
+                  />
+                  <span>Créé le {formatDate(createdAt)}</span>
+                </div>
+              </div>
+
+              {/* Instructor Info - Compact */}
+              <div
+                className={`flex items-center gap-3 mb-6 p-3 rounded-lg ${
+                  darkMode ? "bg-richblack-700" : "bg-white shadow-sm"
+                }`}
+              >
+                <Img
+                  src={instructor.image}
+                  alt={`${instructor.firstName} ${instructor.lastName}`}
+                  className="h-10 w-10 rounded-full object-cover"
+                />
+                <div>
+                  <p className="flex items-center gap-1">
+                    <span className="font-medium">
+                      {instructor.firstName} {instructor.lastName}
+                    </span>
+                    <MdOutlineVerified className="text-blue-400" size={16} />
+                  </p>
+                  <p
+                    className={
+                      darkMode ? "text-richblack-300" : "text-gray-500"
+                    }
+                    text-sm
+                  >
+                    Formateur
+                  </p>
+                </div>
+              </div>
+
+              {/* Mobile Enroll Button */}
+              <div className="lg:hidden mb-8">
+                <button
+                  onClick={
+                    user && studentsEnrolled.includes(user?._id)
+                      ? () => navigate("/dashboard/enrolled-courses")
+                      : handleEnrollCourse
+                  }
+                  className={`w-full py-3 px-6 ${
+                    darkMode
+                      ? "bg-yellow-50 hover:bg-yellow-100 text-richblack-900"
+                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                  } font-semibold rounded-lg shadow-lg`}
+                >
+                  {user && studentsEnrolled.includes(user?._id)
+                    ? "Accéder au cours"
+                    : "S'inscrire maintenant"}
+                </button>
+              </div>
             </div>
 
-            {/* will appear only for small size */}
-            <div className="relative block max-h-[30rem] lg:hidden">
-              <Img
-                src={thumbnail}
-                alt="course thumbnail"
-                className="aspect-auto w-full rounded-2xl"
-              />
-              <div className="absolute bottom-0 left-0 h-full w-full shadow-[#161D29_0px_-64px_36px_-28px_inset]"></div>
+            {/* Course Card - Right Column (Desktop Only) */}
+            <div className="hidden lg:block">
+              <div
+                className={`${
+                  darkMode
+                    ? "bg-richblack-700 border-richblack-600"
+                    : "bg-white border-gray-200"
+                } rounded-xl overflow-hidden shadow-lg border`}
+              >
+                <div className="relative">
+                  <Img
+                    src={thumbnail}
+                    alt={courseName}
+                    className="w-full h-48 object-cover"
+                  />
+                </div>
+
+                <div className="p-5">
+                  <div className="mb-5">
+                    <div className="space-y-2 mb-4">
+                      <div
+                        className={`flex items-center gap-2 ${
+                          darkMode ? "text-richblack-100" : "text-gray-700"
+                        }`}
+                      >
+                        <MdOutlinePlayLesson
+                          className={
+                            darkMode ? "text-blue-100" : "text-blue-600"
+                          }
+                        />
+                        <span>{totalNoOfLectures} leçons</span>
+                      </div>
+                      <div
+                        className={`flex items-center gap-2 ${
+                          darkMode ? "text-richblack-100" : "text-gray-700"
+                        }`}
+                      >
+                        <FaRegClock
+                          className={
+                            darkMode ? "text-blue-100" : "text-blue-600"
+                          }
+                        />
+                        <span>{response.data?.totalDuration} de contenu</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={
+                      user && studentsEnrolled.includes(user?._id)
+                        ? () => navigate("/dashboard/enrolled-courses")
+                        : handleEnrollCourse
+                    }
+                    className={`w-full py-3 px-6 ${
+                      darkMode
+                        ? "bg-yellow-50 hover:bg-yellow-100 text-richblack-900"
+                        : "bg-blue-600 hover:bg-blue-700 text-white"
+                    } font-semibold rounded-lg shadow-lg`}
+                  >
+                    {user && studentsEnrolled.includes(user?._id)
+                      ? "Accéder au cours"
+                      : "S'inscrire maintenant"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Course Content - Simplified */}
+      <div className={darkMode ? "bg-richblack-900" : "bg-gray-50"}>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+          <div className="max-w-3xl">
+            {/* What You'll Learn Section - Compact */}
+            <div className="mb-10">
+              <h2 className={`text-2xl font-bold mb-4 flex items-center gap-2`}>
+                <BiBook
+                  className={darkMode ? "text-yellow-50" : "text-blue-600"}
+                />
+                Ce que vous apprendrez
+              </h2>
+
+              <div
+                className={`${
+                  darkMode ? "bg-richblack-700" : "bg-white"
+                } border ${
+                  darkMode ? "border-richblack-600" : "border-gray-200"
+                } rounded-xl p-5`}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {whatYouWillLearn &&
+                    whatYouWillLearn
+                      .split("\n")
+                      .slice(0, 4)
+                      .map((line, index) => (
+                        <div key={index} className="flex items-start gap-2">
+                          <div
+                            className={`${
+                              darkMode
+                                ? "bg-blue-100 text-richblack-800"
+                                : "bg-blue-600 text-white"
+                            } h-5 w-5 rounded-full flex items-center justify-center flex-shrink-0 mt-1`}
+                          >
+                            <span className="text-xs">{index + 1}</span>
+                          </div>
+                          <p
+                            className={
+                              darkMode ? "text-richblack-100" : "text-gray-700"
+                            }
+                          >
+                            {line}
+                          </p>
+                        </div>
+                      ))}
+                </div>
+              </div>
             </div>
 
-            {/* Course data */}
+            {/* Tags Section - Compact */}
+            <div className="mb-10">
+              <h2 className={`text-xl font-bold mb-3 flex items-center gap-2`}>
+                <FaTags
+                  className={darkMode ? "text-yellow-50" : "text-blue-600"}
+                />
+                Tags
+              </h2>
+
+              <div className="flex flex-wrap gap-2">
+                {tag &&
+                  tag.map((item, ind) => (
+                    <span
+                      key={ind}
+                      className={`${
+                        darkMode
+                          ? "bg-richblack-700 text-richblack-100"
+                          : "bg-blue-100 text-blue-800"
+                      } px-3 py-1 rounded-full text-sm`}
+                    >
+                      {item}
+                    </span>
+                  ))}
+              </div>
+            </div>
+
+            {/* Course Content Section - Simplified */}
+            <div className="mb-10">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className={`text-2xl font-bold flex items-center gap-2`}>
+                  <MdOutlinePlayLesson
+                    className={darkMode ? "text-yellow-50" : "text-blue-600"}
+                  />
+                  Contenu du cours
+                </h2>
+
+                <button
+                  className={`${
+                    darkMode ? "text-blue-100" : "text-blue-600"
+                  } text-sm`}
+                  onClick={() => setIsActive([])}
+                >
+                  Tout réduire
+                </button>
+              </div>
+
+              <div
+                className={`${
+                  darkMode
+                    ? "bg-richblack-700 border-richblack-600"
+                    : "bg-white border-gray-200"
+                } border rounded-xl overflow-hidden`}
+              >
+                <div
+                  className={`${
+                    darkMode ? "bg-richblack-800" : "bg-gray-100"
+                  } p-3 flex items-center justify-between text-sm`}
+                >
+                  <div
+                    className={`flex items-center gap-3 ${
+                      darkMode ? "text-richblack-100" : "text-gray-700"
+                    }`}
+                  >
+                    <span>{courseContent.length} sections</span>
+                    <span>•</span>
+                    <span>{totalNoOfLectures} leçons</span>
+                  </div>
+                </div>
+
+                <div
+                  className={`divide-y ${
+                    darkMode ? "divide-richblack-600" : "divide-gray-200"
+                  }`}
+                >
+                  {courseContent?.slice(0, 3).map((course, index) => (
+                    <CourseAccordionBar
+                      course={course}
+                      key={index}
+                      isActive={isActive}
+                      handleActive={handleActive}
+                      darkMode={darkMode}
+                    />
+                  ))}
+
+                  {courseContent?.length > 3 && (
+                    <div
+                      className={`p-3 text-center ${
+                        darkMode ? "text-blue-400" : "text-blue-600"
+                      }`}
+                    >
+                      + {courseContent.length - 3} autres sections
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Call to Action */}
             <div
-              className={`mb-5 flex flex-col justify-center gap-4 py-5 text-lg text-richblack-5`}
+              className={`${
+                darkMode ? "bg-richblack-700" : "bg-blue-50"
+              } rounded-xl p-6 text-center mb-10`}
             >
-              <p className="text-4xl font-bold text-richblack-5 sm:text-[42px]">
-                {courseName}
+              <h2 className={`text-xl font-bold mb-3`}>
+                Prêt à commencer votre apprentissage ?
+              </h2>
+              <p
+                className={`${
+                  darkMode ? "text-richblack-100" : "text-gray-700"
+                } mb-4`}
+              >
+                Rejoignez {studentsEnrolled.length} étudiants déjà inscrits.
               </p>
-              <p className="text-richblack-200">{courseDescription}</p>
-              <div className="text-md flex flex-wrap items-center gap-2">
-                <span className="text-blue-50">{avgReviewCount}</span>
-                <RatingStars Review_Count={avgReviewCount} Star_Size={24} />
-                <span>{`(${ratingAndReviews.length} avis)`}</span>
-                <span>{`${studentsEnrolled.length} étudiants inscrits`}</span>
-              </div>
-              <p className="capitalize ">
-                {" "}
-                Créé par{" "}
-                <span className="font-semibold underline">
-                  {instructor.firstName} {instructor.lastName}
-                </span>
-              </p>
-              <div className="flex flex-wrap gap-5 text-lg">
-                <p className="flex items-center gap-2">
-                  {" "}
-                  <BiInfoCircle /> Créé le {formatDate(createdAt)}
-                </p>
-              </div>
-            </div>
-
-            {/* will appear only for small size */}
-            <div className="flex w-full flex-col gap-4 border-y border-y-richblack-500 py-4 lg:hidden">
-              <button className="yellowButton" onClick={handleEnrollCourse}>
-                S'inscrire
-              </button>
-            </div>
-            {/* Bouton sur desktop seulement */}
-            <div className="hidden lg:flex w-full flex-col gap-4 border-y border-y-richblack-500 py-4">
               <button
-                className="yellowButton"
                 onClick={
                   user && studentsEnrolled.includes(user?._id)
                     ? () => navigate("/dashboard/enrolled-courses")
                     : handleEnrollCourse
                 }
+                className={`py-2 px-6 ${
+                  darkMode
+                    ? "bg-yellow-50 hover:bg-yellow-100 text-richblack-900"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                } font-medium rounded-lg shadow-md`}
               >
                 {user && studentsEnrolled.includes(user?._id)
-                  ? "Commencer"
-                  : "S'inscrire"}
+                  ? "Continuer l'apprentissage"
+                  : "S'inscrire maintenant"}
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mx-auto box-content px-4 text-start text-richblack-5 lg:w-[1260px]">
-        <div className="mx-auto max-w-maxContentTab lg:mx-0 xl:max-w-[810px]">
-          {/* What will you learn section */}
-          <div className="my-8 border border-richblack-600 p-8">
-            <p className="text-3xl font-semibold">Ce que vous apprendrez</p>
-            <div className="mt-3">
-              {whatYouWillLearn &&
-                whatYouWillLearn.split("\n").map((line, index) => (
-                  <div key={index} className="flex items-center mb-2">
-                    <p className="font-bold">{index + 1}.</p>
-                    <p className="ml-2">{line}</p>
-                  </div>
-                ))}
-            </div>
-          </div>
+      {/* Footer */}
+      <Footer darkMode={darkMode} />
 
-          {/* Tags */}
-          <div className="flex flex-col lg:flex-row gap-4">
-            <p className="text-xl font-bold">Tags</p>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {tag &&
-                tag.map((item, ind) => (
-                  <p
-                    key={ind}
-                    className="bg-blue-100 p-[2px] text-black rounded-full text-center font-semibold"
-                  >
-                    {item}
-                  </p>
-                ))}
-            </div>
-          </div>
-
-          {/* Course Content Section */}
-          <div className="max-w-[830px] mt-9">
-            <div className="flex flex-col gap-3">
-              <p className="text-[28px] font-semibold">Contenu du cours</p>
-              <div className="flex flex-wrap justify-between gap-2">
-                <div className="flex gap-2">
-                  <span>
-                    {courseContent.length} {`section(s)`}
-                  </span>
-                  <span>
-                    {totalNoOfLectures} {`lecture(s)`}
-                  </span>
-                  <span>{response.data?.totalDuration} Durée totale</span>
-                </div>
-                {/*<button
-                  className="text-yellow-25"
-                  onClick={() => setIsActive([])}
-                >
-                  Collapse All Sections
-                </button>*/}
-              </div>
-            </div>
-
-            {/* Course Details Accordion - section Subsection */}
-            <div className="py-4 ">
-              {courseContent?.map((course, index) => (
-                <CourseAccordionBar
-                  course={course}
-                  key={index}
-                  isActive={isActive}
-                  handleActive={handleActive}
-                />
-              ))}
-            </div>
-
-            {/* Author Details */}
-            <div className="mb-12 py-4">
-              <p className="text-[28px] font-semibold">Auteur</p>
-              <div className="flex items-center gap-4 py-4">
-                <Img
-                  src={instructor.image}
-                  alt="Author"
-                  className="h-14 w-14 rounded-full object-cover"
-                />
-                <div>
-                  <p className="text-lg capitalize flex items-center gap-2 font-semibold">
-                    {`${instructor.firstName} ${instructor.lastName}`}
-                    <span>
-                      <MdOutlineVerified className="w-5 h-5 text-[#00BFFF]" />
-                    </span>
-                  </p>
-                  <p className="text-richblack-50">
-                    {instructor?.additionalDetails?.about}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <Footer />
-      {confirmationModal && <ConfirmationModal modalData={confirmationModal} />}
-    </>
+      {/* Confirmation Modal */}
+      {confirmationModal && (
+        <ConfirmationModal modalData={confirmationModal} darkMode={darkMode} />
+      )}
+    </div>
   );
 }
 

@@ -29,6 +29,7 @@ export default function CourseInformationForm() {
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.auth);
   const { course, editCourse } = useSelector((state) => state.course);
+  const { darkMode } = useSelector((state) => state.theme);
   const [loading, setLoading] = useState(false);
   const [courseCategories, setCourseCategories] = useState([]);
 
@@ -53,6 +54,7 @@ export default function CourseInformationForm() {
       setValue("courseBenefits", course.whatYouWillLearn);
       setValue("courseCategory", course.category);
       setValue("courseRequirements", course.instructions);
+      setValue("isCertified", course.isCertified);
       setValue("courseImage", course.thumbnail);
     }
 
@@ -70,6 +72,7 @@ export default function CourseInformationForm() {
       currentValues.courseCategory._id !== course.category._id ||
       currentValues.courseRequirements.toString() !==
         course.instructions.toString() ||
+      currentValues.isCertified !== course.isCertified ||
       currentValues.courseImage !== course.thumbnail
     ) {
       return true;
@@ -119,6 +122,9 @@ export default function CourseInformationForm() {
         if (currentValues.courseImage !== course.thumbnail) {
           formData.append("thumbnailImage", data.courseImage);
         }
+        if (currentValues.isCertified !== course.isCertified) {
+          formData.append("isCertified", data.isCertified);
+        }
 
         // send data to backend
         setLoading(true);
@@ -129,7 +135,7 @@ export default function CourseInformationForm() {
           dispatch(setCourse(result));
         }
       } else {
-        toast.error("No changes made to the form");
+        toast.error("Aucune modification apportée au formulaire");
       }
       return;
     }
@@ -144,6 +150,7 @@ export default function CourseInformationForm() {
     formData.append("status", COURSE_STATUS.DRAFT);
     formData.append("instructions", JSON.stringify(data.courseRequirements));
     formData.append("thumbnailImage", data.courseImage);
+    formData.append("isCertified", data.isCertified ? "true" : "false");
     setLoading(true);
     const result = await addCourseDetails(formData, token);
     if (result) {
@@ -156,54 +163,92 @@ export default function CourseInformationForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-8 rounded-md border-[1px] border-richblack-700 bg-richblack-800 p-6 "
+      className={`space-y-8 rounded-md border-[1px] p-6 ${
+        darkMode
+          ? "border-richblack-700 bg-richblack-800"
+          : "border-richblack-200 bg-white shadow-md"
+      }`}
     >
       {/* Course Title */}
       <div className="flex flex-col space-y-2">
-        <label className="text-sm text-richblack-5" htmlFor="courseTitle">
-          Titre du cours <sup className="text-pink-200">*</sup>
+        <label
+          className={`text-sm ${
+            darkMode ? "text-richblack-5" : "text-richblack-600"
+          }`}
+          htmlFor="courseTitle"
+        >
+          Titre de la formation <sup className="text-pink-200">*</sup>
         </label>
         <input
           id="courseTitle"
-          placeholder="Enter Course Title"
+          placeholder="Entrez le titre de la formation"
           {...register("courseTitle", { required: true })}
-          className="form-style w-full"
+          className={`w-full rounded-lg p-3 transition-all duration-200 ${
+            darkMode
+              ? "bg-richblack-700 text-richblack-5 border-richblack-600"
+              : "bg-richblack-5 text-richblack-800 border-richblack-200"
+          } focus:outline-none focus:ring-2 ${
+            darkMode ? "focus:ring-blue-500" : "focus:ring-blue-500"
+          }`}
         />
         {errors.courseTitle && (
           <span className="ml-2 text-xs tracking-wide text-pink-200">
-            Le titre du cours est obligatoire
+            Le titre de la formation est obligatoire
           </span>
         )}
       </div>
 
       {/* Course Short Description */}
       <div className="flex flex-col space-y-2">
-        <label className="text-sm text-richblack-5" htmlFor="courseShortDesc">
-          Brève description du cour <sup className="text-pink-200">*</sup>
+        <label
+          className={`text-sm ${
+            darkMode ? "text-richblack-5" : "text-richblack-600"
+          }`}
+          htmlFor="courseShortDesc"
+        >
+          Brève description de la formation{" "}
+          <sup className="text-pink-200">*</sup>
         </label>
         <textarea
           id="courseShortDesc"
-          placeholder="Enter Description"
+          placeholder="Entrez la description"
           {...register("courseShortDesc", { required: true })}
-          className="form-style resize-x-none min-h-[130px] w-full ] "
+          className={`resize-none min-h-[130px] w-full rounded-lg p-3 transition-all duration-200 ${
+            darkMode
+              ? "bg-richblack-700 text-richblack-5 border-richblack-600"
+              : "bg-richblack-5 text-richblack-800 border-richblack-200"
+          } focus:outline-none focus:ring-2 ${
+            darkMode ? "focus:ring-blue-500" : "focus:ring-blue-500"
+          }`}
         />
         {errors.courseShortDesc && (
           <span className="ml-2 text-xs tracking-wide text-pink-200">
-            La description du cour est requise
+            La description de la formation est requise
           </span>
         )}
       </div>
 
       {/* Course Category */}
       <div className="flex flex-col space-y-2 ">
-        <label className="text-sm text-richblack-5" htmlFor="courseCategory">
-          Catégorie de cour <sup className="text-pink-200">*</sup>
+        <label
+          className={`text-sm ${
+            darkMode ? "text-richblack-5" : "text-richblack-600"
+          }`}
+          htmlFor="courseCategory"
+        >
+          Catégorie de formation <sup className="text-pink-200">*</sup>
         </label>
         <select
           {...register("courseCategory", { required: true })}
           defaultValue=""
           id="courseCategory"
-          className="form-style w-full cursor-pointer"
+          className={`w-full rounded-lg p-3 transition-all duration-200 cursor-pointer ${
+            darkMode
+              ? "bg-richblack-700 text-richblack-5 border-richblack-600"
+              : "bg-richblack-5 text-richblack-800 border-richblack-200"
+          } focus:outline-none focus:ring-2 ${
+            darkMode ? "focus:ring-blue-500" : "focus:ring-blue-500"
+          }`}
         >
           <option value="" disabled>
             Choisissez une catégorie
@@ -217,16 +262,47 @@ export default function CourseInformationForm() {
         </select>
         {errors.courseCategory && (
           <span className="ml-2 text-xs tracking-wide text-pink-200">
-            La catégorie de cour est obligatoire
+            La catégorie de formation est obligatoire
           </span>
         )}
+      </div>
+
+      <div className="flex flex-col space-y-2">
+        <label
+          className={`text-sm ${
+            darkMode ? "text-richblack-5" : "text-richblack-600"
+          }`}
+          htmlFor="isCertified"
+        >
+          Formation certifiante
+        </label>
+        <div className="flex items-center gap-2">
+          <input
+            id="isCertified"
+            type="checkbox"
+            {...register("isCertified")}
+            defaultChecked={editCourse ? course?.isCertified : false}
+            className={`h-4 w-4 rounded transition-all duration-200 ${
+              darkMode
+                ? "bg-richblack-700 border-richblack-600 checked:bg-blue-500"
+                : "bg-richblack-5 border-richblack-200 checked:bg-blue-500"
+            }`}
+          />
+          <span
+            className={`text-sm ${
+              darkMode ? "text-richblack-300" : "text-richblack-500"
+            }`}
+          >
+            Cette formation offre un certificat après réussite de l'examen final
+          </span>
+        </div>
       </div>
 
       {/* Course Tags */}
       <ChipInput
         label="Tags"
         name="courseTags"
-        placeholder="Enter Tags and press Enter or Comma"
+        placeholder="Entrez les tags et appuyez sur Entrée ou Virgule"
         register={register}
         errors={errors}
         setValue={setValue}
@@ -235,7 +311,7 @@ export default function CourseInformationForm() {
       {/* Course Thumbnail Image */}
       <Upload
         name="courseImage"
-        label="Course Thumbnail"
+        label="Image miniature de la formation"
         register={register}
         setValue={setValue}
         errors={errors}
@@ -244,18 +320,29 @@ export default function CourseInformationForm() {
 
       {/* Benefits of the course */}
       <div className="flex flex-col space-y-2">
-        <label className="text-sm text-richblack-5" htmlFor="courseBenefits">
-          Avantages du cour <sup className="text-pink-200">*</sup>
+        <label
+          className={`text-sm ${
+            darkMode ? "text-richblack-5" : "text-richblack-600"
+          }`}
+          htmlFor="courseBenefits"
+        >
+          Avantages de la formation <sup className="text-pink-200">*</sup>
         </label>
         <textarea
           id="courseBenefits"
-          placeholder="Enter benefits of the course"
+          placeholder="Entrez les avantages de la formation"
           {...register("courseBenefits", { required: true })}
-          className="form-style resize-x-none min-h-[130px] w-full"
+          className={`resize-none min-h-[130px] w-full rounded-lg p-3 transition-all duration-200 ${
+            darkMode
+              ? "bg-richblack-700 text-richblack-5 border-richblack-600"
+              : "bg-richblack-5 text-richblack-800 border-richblack-200"
+          } focus:outline-none focus:ring-2 ${
+            darkMode ? "focus:ring-blue-500" : "focus:ring-blue-500"
+          }`}
         />
         {errors.courseBenefits && (
           <span className="ml-2 text-xs tracking-wide text-pink-200">
-            Benefits of the course is required
+            Les avantages de la formation sont requis
           </span>
         )}
       </div>
@@ -263,10 +350,11 @@ export default function CourseInformationForm() {
       {/* Requirements/Instructions */}
       <RequirementsField
         name="courseRequirements"
-        label="Requirements/Instructions"
+        label="Prérequis/Instructions"
         register={register}
         setValue={setValue}
         errors={errors}
+        darkMode={darkMode}
       />
 
       {/* Next Button */}
@@ -275,15 +363,20 @@ export default function CourseInformationForm() {
           <button
             onClick={() => dispatch(setStep(2))}
             disabled={loading}
-            className={`flex cursor-pointer items-center gap-x-2 rounded-md py-[8px] px-[20px] font-semibold
-              text-richblack-900 bg-richblack-300 hover:bg-richblack-900 hover:text-richblack-300 duration-300`}
+            className={`flex cursor-pointer items-center gap-x-2 rounded-md py-[8px] px-[20px] font-semibold transition-all duration-200 ${
+              darkMode
+                ? "bg-richblack-300 text-richblack-900 hover:bg-richblack-900 hover:text-richblack-300"
+                : "bg-richblack-300 text-richblack-900 hover:bg-richblack-700 hover:text-white"
+            } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            Continue Wihout Saving
+            Continuer sans enregistrer
           </button>
         )}
         <IconBtn
           disabled={loading}
-          text={!editCourse ? "Next" : "Save Changes"}
+          text={!editCourse ? "Suivant" : "Enregistrer les modifications"}
+          type="submit"
+          variant="primary"
         >
           <MdNavigateNext />
         </IconBtn>

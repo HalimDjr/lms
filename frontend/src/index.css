@@ -274,3 +274,55 @@ body {
     @apply rotate-[-360deg];
   }
 }
+
+/* Ajoutez ceci à votre fichier CSS global */
+.light-mode {
+  color-scheme: light;
+}
+
+.light-mode body {
+  @apply bg-richblack-5 text-richblack-900;
+}
+
+/* Transition pour le changement de mode */
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Ajustements pour les éléments en mode clair */
+.light-mode .glass-bg {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.light-mode .top {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(3.5px);
+  -webkit-backdrop-filter: blur(3.5px);
+}
+
+.light-mode .show {
+  background-color: #f1f2ff;
+}
+
+.light-mode .gradient_color {
+  background: linear-gradient(
+      118.19deg,
+      #1fa2ff -3.62%,
+      #12d8fa 50.44%,
+      #a6ffcb 104.51%
+    ),
+    linear-gradient(0deg, #252134, #252134);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Ajustements pour les composants spécifiques */
+.light-mode .yellowButton {
+  @apply bg-[#0a2f59] text-white hover:bg-blue-700 hover:text-white;
+}
+
+.light-mode .blackButton {
+  @apply bg-richblack-50 text-richblack-800 hover:bg-richblack-800 hover:text-richblack-5;
+}
