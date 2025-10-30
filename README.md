@@ -72,6 +72,6 @@ npm run dev
 
 
 📸 Captures d’écran
-<img width="990" height="484" alt="Image1" src="https://github.com/user-attachments/assets/9ca3be5f-51f0-49c3-acce-9dd77aec149c" />
+
 
 
