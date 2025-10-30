@@ -76,11 +76,7 @@ npm run dev
 ### Dashboard
 ![Dashboard](assets/Image21.png)
 
-### Vue du cours
-![Cours](assets/cours.png)
 
-### Passage de l'examen
-![Examen](assets/examen.png)
 
 
 
