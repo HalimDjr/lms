@@ -76,3 +76,35 @@ npm run dev
 
 ### Dashboard
 ![Dashboard](assets/Image21.png)
+![Dashboard](assets/Image22.png)
+![Dashboard](assets/Image23.png)
+### Accueil 
+![Accueil](assets/Image1.png)
+### Connexion
+![Connexion](assets/Image2.png)
+### Profil
+![Profil](assets/Image3.png)
+### Quiz
+![Quiz](assets/Image8.png)
+### cour en direct
+![Live](assets/Image11.png)
+### Cours
+![Cours](assets/Image5.png)
+### Forum
+![Forum](assets/Image16.png)
+### Condidature
+![Condidature](assets/Image18.png)
+### Autres
+![Autres](assets/Image6.png)
+![Autres](assets/Image7.png)
+![Autres](assets/Image9.png)
+![Autres](assets/Image10.png)
+![Autres](assets/Image4.png)
+![Autres](assets/Image12.png)
+![Autres](assets/Image13.png)
+![Autres](assets/Image14.png)
+![Autres](assets/Image15.png)
+![Autres](assets/Image17.png)
+![Autres](assets/Image18.png)
+![Autres](assets/Image19.png)
+![Autres](assets/Image20.png)
