@@ -74,7 +74,7 @@ npm run dev
 ## 📸 Captures d’écran
 
 ### Dashboard
-![Dashboard](assets/Image21.png)(assets/Image22.png)(assets/Image22.png)
+![Dashboard](assets/Image21.png)
 
 ### Vue du cours
 ![Cours](assets/cours.png)
