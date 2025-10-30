@@ -71,7 +71,17 @@ npm run dev
 •	Accéder à l’application → l’adresse indiquée par Vite (souvent http://localhost:5173)
 
 
-📸 Captures d’écran
+## 📸 Captures d’écran
+
+### Dashboard
+![Dashboard](assets/Image21.png)(assets/Image22.png)(assets/Image22.png)
+
+### Vue du cours
+![Cours](assets/cours.png)
+
+### Passage de l'examen
+![Examen](assets/examen.png)
+
 
 
 
