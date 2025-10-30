@@ -38,10 +38,6 @@ Elle permet la gestion complète des utilisateurs, formations, examens, certific
 | Temps réel | Socket.IO | Chat et cours en direct |
 
 ---
-## 📸 Captures d’écran
-
-### Dashboard
-![Dashboard](assets/Image21.png)
 
 ## 📦 Installation & exécution
 
@@ -73,12 +69,10 @@ cd ../frontend
 npm install
 npm run dev
 •	Accéder à l’application → l’adresse indiquée par Vite (souvent http://localhost:5173)
+```
 
+---
+## 📸 Captures d’écran
 
-
-
-
-
-
-
-
+### Dashboard
+![Dashboard](assets/Image21.png)
