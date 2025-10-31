@@ -1,4 +1,4 @@
-// server/controllers/chatbotController.js
+
 
 exports.getChatbotResponse = async (req, res) => {
   try {
