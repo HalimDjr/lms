@@ -1,4 +1,3 @@
-// backend/controllers/notificationController.js
 const Notification = require("../models/notification");
 
 // Update createNotification to accept type and target
@@ -10,13 +9,11 @@ exports.createNotification = async (userId, message, type, target = null) => {
     const notification = new Notification({
       userId,
       message,
-      type, // Include type
-      target, // Include target
+      type, 
+      target, 
     });
     await notification.save();
     console.log("Notification created successfully");
-    // You might want to emit a socket event here to notify the user in real-time
-    // io.to(userId).emit("new-notification", notification); // Assuming you have access to io and can map userId to socketId
   } catch (error) {
     console.error("Error creating notification:", error);
   }

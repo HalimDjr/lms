@@ -1,4 +1,3 @@
-// AUTH , IS STUDENT , IS INSTRUCTOR , IS ADMIN
 
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
@@ -49,7 +48,6 @@ exports.auth = (req, res, next) => {
         messgae: "Error while decoding token",
       });
     }
-    // go to next middleware
     next();
   } catch (error) {
     console.log("Error while token validating");
@@ -146,7 +144,6 @@ exports.isInstructorOrAdmin = (req, res, next) => {
           "Cette page est protégée et réservée aux instructeurs et administrateurs",
       });
     }
-    // go to next middleware
     next();
   } catch (error) {
     console.log(

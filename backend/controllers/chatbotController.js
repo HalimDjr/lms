@@ -1,5 +1,3 @@
-
-
 exports.getChatbotResponse = async (req, res) => {
   try {
     const { message } = req.body;

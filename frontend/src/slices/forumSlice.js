@@ -1,4 +1,4 @@
-// forumSlice.js
+
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { apiConnector } from "../services/apiConnector";
 import { forumEndpoints } from "../services/apis";

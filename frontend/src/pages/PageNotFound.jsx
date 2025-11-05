@@ -32,7 +32,7 @@ const PageNotFound = () => {
       style={{ backgroundImage: `url(${loginBg})` }}
     >
       <motion.div
-        className="max-w-5xl w-full" // Augmentation de la largeur maximale
+        className="max-w-5xl w-full" 
         variants={containerVariants}
         initial="hidden"
         animate="visible"

@@ -1,10 +1,9 @@
-// frontend/src/services/operations/quizAPI.js
+
 import { apiConnector } from "../apiConnector";
 import { quizEndpoints, subSectionQuizEndpoints } from "../apis";
 import { toast } from "react-hot-toast";
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
-// Helper pour vérifier si l'utilisateur est instructeur ou admin
 const isInstructorOrAdmin = (user) => {
   return user?.accountType === "Instructor" || user?.accountType === "Admin";
 };
@@ -19,7 +18,6 @@ export const createQuiz = async (data, token, user) => {
 
   const toastId = toast.loading("Création d'examen...");
   try {
-    // S'assurer que le champ publie est inclus dans data
     const response = await apiConnector(
       "POST",
       quizEndpoints.CREATE_QUIZ_API,
@@ -48,7 +46,6 @@ export const createQuiz = async (data, token, user) => {
 
 // Ajouter une question au quiz
 export const addQuestion = async (data, token, user) => {
-  // Vérification optionnelle côté client
   if (user && !isInstructorOrAdmin(user)) {
     toast.error("Non autorisé");
     return null;
@@ -84,7 +81,6 @@ export const addQuestion = async (data, token, user) => {
 
 // Obtenir les détails d'un quiz (pour l'instructeur ou admin)
 export const getQuizDetails = async (quizId, token, user) => {
-  // Vérification optionnelle côté client
   if (user && !isInstructorOrAdmin(user)) {
     toast.error("Non autorisé");
     return null;
@@ -130,7 +126,6 @@ export const getQuizForStudent = async (quizId, token) => {
       throw new Error(response.data.message);
     }
 
-    // Log détaillé de ce qui est reçu
     console.log("API Response for quiz", quizId, ":");
     console.log(
       "- alreadyTaken:",
@@ -142,7 +137,6 @@ export const getQuizForStudent = async (quizId, token) => {
     console.log("- existingAttempt:", response.data.existingAttempt);
     console.log("- resultId:", response.data.resultId);
 
-    // Forcer les valeurs à être des types appropriés
     const result = {
       ...response.data,
       alreadyTaken: Boolean(response.data.alreadyTaken),

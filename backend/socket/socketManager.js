@@ -1,4 +1,4 @@
-// socket/socketManager.js - Gestion des connexions Socket.IO
+// - Gestion des connexions Socket.IO
 const { Server } = require("socket.io");
 const Course = require("../models/course");
 const { createNotification } = require("../controllers/notificationController");

@@ -1,4 +1,4 @@
-// frontend/src/services/notificationService.js
+
 import { apiConnector } from "../apiConnector";
 import { notificationEndpoints } from "../apis";
 

@@ -1,4 +1,3 @@
-// Nouveau fichier: models/statistics.js
 const mongoose = require("mongoose");
 
 const statisticsSchema = new mongoose.Schema(
@@ -26,14 +25,13 @@ const statisticsSchema = new mongoose.Schema(
       passRate: { type: Number, default: 0 },
     },
     certificatesIssued: { type: Number, default: 0 },
-    // models/statistics.js
     categoryStats: [
       {
         category: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Category",
         },
-        name: String, // Ajouter ce champ
+        name: String, 
         coursesCount: { type: Number, default: 0 },
         enrollmentsCount: { type: Number, default: 0 },
       },

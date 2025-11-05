@@ -1,14 +1,13 @@
-// services/apiConnector.js
+
 import axios from "axios";
 import { isTokenExpired } from "../utils/tokenExpiryChecker";
-import { store } from "../main"; // Assurez-vous que le chemin est correct
+import { store } from "../main"; 
 import { setToken } from "../slices/authSlice";
 import { setUser } from "../slices/profileSlice";
 import { toast } from "react-hot-toast";
 
 export const axiosInstance = axios.create({});
 
-// Fonction de déconnexion à utiliser en dehors des composants React
 const logoutUser = () => {
   store.dispatch(setToken(null));
   store.dispatch(setUser(null));
@@ -16,7 +15,7 @@ const logoutUser = () => {
   localStorage.removeItem("user");
   toast.error("Session expirée. Veuillez vous reconnecter.");
 
-  // Redirection vers la page de connexion
+  
   setTimeout(() => {
     window.location.href = "/login";
   }, 1000);

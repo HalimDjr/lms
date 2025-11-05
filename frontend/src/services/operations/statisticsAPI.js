@@ -1,17 +1,15 @@
-// frontend/src/services/operations/statisticsAPI.js
 import { toast } from "react-hot-toast";
 import { apiConnector } from "../apiConnector";
 import { statisticsEndpoints } from "../apis";
 import { jsPDF } from "jspdf";
-// Import jspdf-autotable
 import "jspdf-autotable";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
 /**
  * Génère de nouvelles statistiques
- * @param {string} token - Token d'authentification
- * @returns {Object|null} - Les données de statistiques générées ou null en cas d'erreur
+ * @param {string} token 
+ * @returns {Object|null} 
  */
 export const generateStatistics = async (token) => {
   try {
@@ -39,10 +37,10 @@ export const generateStatistics = async (token) => {
 
 /**
  * Récupère l'historique des statistiques pour une période donnée
- * @param {string} token - Token d'authentification
- * @param {string} startDate - Date de début au format YYYY-MM-DD (optionnel)
- * @param {string} endDate - Date de fin au format YYYY-MM-DD (optionnel)
- * @returns {Array|null} - Les données historiques ou null en cas d'erreur
+ * @param {string} token 
+ * @param {string} startDate 
+ * @param {string} endDate 
+ * @returns {Array|null} 
  */
 export const getStatisticsHistory = async (token, startDate, endDate) => {
   try {
@@ -71,8 +69,8 @@ export const getStatisticsHistory = async (token, startDate, endDate) => {
 
 /**
  * Récupère les statistiques détaillées des quiz
- * @param {string} token - Token d'authentification
- * @returns {Object|null} - Les statistiques des quiz ou null en cas d'erreur
+ * @param {string} token 
+ * @returns {Object|null} 
  */
 export const getQuizStatistics = async (token) => {
   try {
@@ -98,12 +96,12 @@ export const getQuizStatistics = async (token) => {
     const rawData = response.data.data;
     console.log("Données brutes reçues:", rawData);
 
-    // S'assurer que toutes les propriétés sont présentes avec des valeurs par défaut
+    
     const quizStats = {
       totalQuizzes: rawData.totalQuizzes || 0,
       totalAttempts: rawData.totalAttempts || 0,
       averageScore: rawData.averageScore || 0,
-      passRate: rawData.passRate || 0, // Assurez-vous que cette valeur est bien transmise
+      passRate: rawData.passRate || 0, 
     };
 
     console.log("Statistiques des quiz traitées:", quizStats);
@@ -122,8 +120,8 @@ export const getQuizStatistics = async (token) => {
 
 /**
  * Récupère les statistiques de progression des cours
- * @param {string} token - Token d'authentification
- * @returns {Object|null} - Les statistiques de progression ou null en cas d'erreur
+ * @param {string} token
+ * @returns {Object|null} 
  */
 export const getCourseProgressStats = async (token) => {
   try {
@@ -152,8 +150,8 @@ export const getCourseProgressStats = async (token) => {
 
 /**
  * Récupère les statistiques des évaluations et avis
- * @param {string} token - Token d'authentification
- * @returns {Object|null} - Les statistiques des évaluations ou null en cas d'erreur
+ * @param {string} token
+ * @returns {Object|null}
  */
 export const getRatingStats = async (token) => {
   try {
@@ -182,9 +180,9 @@ export const getRatingStats = async (token) => {
 
 /**
  * Exporte les statistiques au format CSV
- * @param {Object} statistics - Les données de statistiques à exporter
- * @param {string} reportType - Le type de rapport (users, courses, categories, complete)
- * @returns {boolean} - true si l'export a réussi, false sinon
+ * @param {Object} statistics 
+ * @param {string} reportType 
+ * @returns {boolean} 
  */
 export const exportStatisticsToCSV = (statistics, reportType = "complete") => {
   try {
@@ -330,9 +328,9 @@ export const exportStatisticsToCSV = (statistics, reportType = "complete") => {
 
 /**
  * Génère un rapport PDF avancé avec graphiques et mise en page professionnelle
- * @param {Object} statistics - Les données de statistiques
- * @param {string} reportType - Le type de rapport (users, courses, categories, complete)
- * @returns {Promise<boolean>} - Promise résolue avec true si le rapport a été généré, false sinon
+ * @param {Object} statistics 
+ * @param {string} reportType 
+ * @returns {Promise<boolean>} 
  */
 export const generatePDFReport = async (
   statistics,

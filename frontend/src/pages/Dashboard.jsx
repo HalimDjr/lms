@@ -12,8 +12,6 @@ const Dashboard = () => {
         darkMode ? "bg-richblack-900" : "bg-richblack-5"
       }`}
     >
-      {/* Nous n'avons pas besoin d'inclure <Sidebar /> ici car il contient déjà <Outlet /> */}
-      {/* et gère déjà la mise en page responsive */}
       <Sidebar />
     </div>
   );

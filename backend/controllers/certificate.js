@@ -1,4 +1,4 @@
-// controllers/certificate.js
+
 const Certificate = require("../models/certificate");
 const Course = require("../models/course");
 const QuizResult = require("../models/quizResult");
@@ -113,7 +113,7 @@ exports.uploadCertificate = async (req, res) => {
     // Créer une notification uniquement pour l'étudiant concerné
     const notificationMessage = `Félicitations ! Votre certificat pour le cours "${course.courseName}" est disponible.`;
     const notificationType = "new-certificate";
-    const notificationTarget = `/dashboard/student-certificates`; // Lien vers le certificat
+    const notificationTarget = `/dashboard/student-certificates`; 
 
     // Créer la notification pour l'étudiant spécifique
     createNotification(
@@ -207,7 +207,7 @@ exports.getCertificate = async (req, res) => {
   }
 };
 
-// Télécharger un certificat (suite)
+// Télécharger un certificat
 exports.downloadCertificate = async (req, res) => {
   try {
     const { certificateId } = req.params;
@@ -285,7 +285,6 @@ exports.getEligibleStudents = async (req, res) => {
     const { courseId } = req.params;
 
     try {
-      // Utiliser la fonction helper pour vérifier les droits
       await checkInstructorOrAdminAccess(
         courseId,
         req.user.id,
@@ -358,7 +357,6 @@ exports.getCourseCertificates = async (req, res) => {
     const { courseId } = req.params;
 
     try {
-      // Utiliser la fonction helper pour vérifier les droits
       await checkInstructorOrAdminAccess(
         courseId,
         req.user.id,

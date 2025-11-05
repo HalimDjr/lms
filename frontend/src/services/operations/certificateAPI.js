@@ -1,16 +1,15 @@
-// frontend/src/services/operations/certificateAPI.js
+
 import { apiConnector } from "../apiConnector";
 import { certificateEndpoints } from "../apis";
 import { toast } from "react-hot-toast";
 
-// Helper pour vérifier si l'utilisateur est instructeur ou admin
+
 const isInstructorOrAdmin = (user) => {
   return user?.accountType === "Instructor" || user?.accountType === "Admin";
 };
 
 // Obtenir les étudiants éligibles pour un certificat
 export const getEligibleStudents = async (courseId, token, user) => {
-  // Vérification optionnelle côté client
   if (user && !isInstructorOrAdmin(user)) {
     toast.error("Non autorisé");
     return null;
@@ -80,7 +79,6 @@ export const uploadCertificate = async (data, token, user) => {
 };
 
 // Obtenir les certificats d'un cours
-// Obtenir les certificats d'un cours (suite)
 export const getCourseCertificates = async (courseId, token, user) => {
   // Vérification optionnelle côté client
   if (user && !isInstructorOrAdmin(user)) {

@@ -1,4 +1,3 @@
-// Amélioration de chatbotAPI.js
 import { apiConnector } from "../apiConnector";
 import { chatbotEndpoints } from "../apis";
 
@@ -25,14 +24,12 @@ export const getChatbotResponse = async (message, conversationHistory = []) => {
       const lastRequest = new Date(localStorage.getItem("lastChatbotRequest"));
       const now = new Date();
       if (now - lastRequest < 500) {
-        // 500ms minimum entre les requêtes
         await new Promise((resolve) => setTimeout(resolve, 500));
       }
     }
 
     localStorage.setItem("lastChatbotRequest", new Date().toString());
 
-    // Obtenir les informations de l'utilisateur si disponibles
     const userContext = {};
     try {
       const userInfo = JSON.parse(localStorage.getItem("user"));
@@ -47,8 +44,7 @@ export const getChatbotResponse = async (message, conversationHistory = []) => {
 
     const response = await apiConnector("POST", GET_CHATBOT_RESPONSE_API, {
       message,
-      conversationHistory: conversationHistory.slice(-5), // Envoyer les 5 derniers messages pour le contexte
-      userContext,
+      conversationHistory: conversationHistory.slice(-5), 
     });
 
     if (!response?.data?.success) {
@@ -64,7 +60,7 @@ export const getChatbotResponse = async (message, conversationHistory = []) => {
   } catch (error) {
     console.error("GET_CHATBOT_RESPONSE_API ERROR:", error);
 
-    // En cas d'erreur, utiliser l'endpoint de secours
+    // En cas d'erreur utiliser l'endpoint de secours
     try {
       const fallbackResponse = await apiConnector(
         "POST",
@@ -78,7 +74,7 @@ export const getChatbotResponse = async (message, conversationHistory = []) => {
       console.error("GET_SIMPLE_RESPONSE_API ERROR:", fallbackError);
     }
 
-    // Si tout échoue, utiliser une réponse locale
+    // Si tout échoue utiliser une réponse locale
     const localFallbackResponse = getLocalFallbackResponse(message);
     return localFallbackResponse;
   }

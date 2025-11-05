@@ -293,9 +293,6 @@ export async function processUnenrollmentRequest(
   }
 }
 
-// Vous pouvez ajouter d'autres fonctions d'API admin ici
-// Par exemple:
-
 // ================ Obtenir les statistiques des cours ================
 export async function getCourseStats(token) {
   try {
@@ -338,7 +335,6 @@ export async function getUserStats(token) {
   }
 }
 
-// Dans adminAPI.js - Fonction modifiée pour exporter des utilisateurs spécifiques
 export const exportUsersToPDF = async (token, accountType = null) => {
   try {
     // Construire l'URL avec le paramètre accountType si fourni
@@ -355,7 +351,7 @@ export const exportUsersToPDF = async (token, accountType = null) => {
         Authorization: `Bearer ${token}`,
       },
       null,
-      "blob" // Spécifier le responseType comme 'blob'
+      "blob" 
     );
 
     // Créer un blob à partir de la réponse
@@ -368,7 +364,6 @@ export const exportUsersToPDF = async (token, accountType = null) => {
     const link = document.createElement("a");
     link.href = fileURL;
 
-    // Nommer le fichier en fonction du type de compte
     const fileName = accountType
       ? `${accountType.toLowerCase()}-${
           new Date().toISOString().split("T")[0]
@@ -377,7 +372,6 @@ export const exportUsersToPDF = async (token, accountType = null) => {
 
     link.setAttribute("download", fileName);
 
-    // Ajouter le lien au document, cliquer dessus, puis le supprimer
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

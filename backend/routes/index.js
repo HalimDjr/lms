@@ -1,4 +1,4 @@
-// routes/index.js - Centralisation des routes
+//Centralisation des routes
 const express = require("express");
 const router = express.Router();
 

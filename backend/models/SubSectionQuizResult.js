@@ -1,4 +1,3 @@
-// models/SubSectionQuizResult.js
 const mongoose = require("mongoose");
 
 const subSectionQuizResultSchema = new mongoose.Schema({

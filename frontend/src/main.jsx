@@ -1,4 +1,3 @@
-// main.jsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
@@ -9,7 +8,6 @@ import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from "./reducer/index";
 import { Toaster } from "react-hot-toast";
 
-// Créer le store Redux
 export const store = configureStore({
   reducer: rootReducer,
 });

@@ -6,7 +6,7 @@ require("dotenv").config();
 const mailSender = require("../utils/mailSender");
 const { passwordUpdated } = require("../mail/templates/passwordUpdate");
 
-// ================ SIGNUP (Sans vérification email) ================
+// ================ SIGNUP ================
 exports.signup = async (req, res) => {
   try {
     // Extraire les données du corps de la requête
@@ -79,7 +79,7 @@ exports.signup = async (req, res) => {
       image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,
     });
 
-    // Retourner une réponse de succès
+  
     res.status(200).json({
       success: true,
       message: "Utilisateur inscrit avec succès",
@@ -132,7 +132,7 @@ exports.login = async (req, res) => {
 
       user = user.toObject();
       user.token = token;
-      user.password = undefined; // Supprimer le mot de passe de la réponse
+      user.password = undefined; 
 
       // Options du cookie
       const cookieOptions = {
@@ -229,7 +229,6 @@ exports.changePassword = async (req, res) => {
       });
     }
 
-    // Réponse de succès
     res.status(200).json({
       success: true,
       message: "Mot de passe changé avec succès.",

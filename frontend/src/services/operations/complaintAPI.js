@@ -1,4 +1,4 @@
-// services/operations/complaintAPI.js
+
 import { toast } from "react-hot-toast";
 import { complaintEndpoints } from "../apis";
 import { apiConnector } from "../apiConnector";

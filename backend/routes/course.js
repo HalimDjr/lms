@@ -3,11 +3,9 @@ const router = express.Router();
 const fetch = require("node-fetch");
 const path = require("path");
 const fs = require("fs");
-const SubSection = require("../models/subSection"); // Ajoutez cette ligne
+const SubSection = require("../models/subSection"); 
 
-// Import required controllers
 
-// course controllers
 const {
   createCourse,
   getCourseDetails,
@@ -23,11 +21,11 @@ const {
   enrollFreeCourse,
   requestUnenrollment,
   getStudentUnenrollmentRequests,
-  enrollStudentToCourse, // Ajoutez cette ligne
+  enrollStudentToCourse, 
   enrollMultipleStudentsToCourse,
 } = require("../controllers/inscription");
 
-// categories Controllers
+
 const {
   createCategory,
   showAllCategories,

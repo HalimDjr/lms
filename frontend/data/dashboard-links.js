@@ -1,5 +1,3 @@
-// Modification du fichier dashboard-links.js
-
 import { ACCOUNT_TYPE } from "./../src/utils/constants";
 
 export const sidebarLinks = [
@@ -32,20 +30,20 @@ export const sidebarLinks = [
     type: ACCOUNT_TYPE.INSTRUCTOR,
     icon: "VscAdd",
   },
-  // Nouveau lien pour les examens (quiz)
+
   {
-    id: 12, // Utilisez un ID unique qui n'est pas déjà utilisé
+    id: 12, 
     name: "Mes examens",
     path: "/dashboard/instructor-quizzes",
     type: ACCOUNT_TYPE.INSTRUCTOR,
-    icon: "FaClipboard", // Vous devrez ajouter cette icône
+    icon: "FaClipboard", 
   },
   {
     id: 14,
     name: "Certificats",
     path: "/dashboard/instructor-certificates",
     type: ACCOUNT_TYPE.INSTRUCTOR,
-    icon: "VscVerified", // Vous pouvez utiliser cette icône ou une autre
+    icon: "VscVerified", 
   },
   {
     id: 25,
@@ -81,14 +79,14 @@ export const sidebarLinks = [
     name: "Mes certificats",
     path: "/dashboard/student-certificates",
     type: ACCOUNT_TYPE.STUDENT,
-    icon: "VscVerified", // Vous pouvez utiliser cette icône ou une autre
+    icon: "VscVerified", 
   },
   {
     id: 17,
     name: "Cours en direct",
     path: "/dashboard/live-streams",
     type: ACCOUNT_TYPE.STUDENT,
-    icon: "FaVideo", // Vous devrez ajouter cette icône
+    icon: "FaVideo", 
   },
   {
     id: 25,

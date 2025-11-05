@@ -1,6 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-// Vérifier si le mode sombre est enregistré dans localStorage
 const savedDarkMode =
   localStorage.getItem("darkMode") === "false" ? false : true;
 

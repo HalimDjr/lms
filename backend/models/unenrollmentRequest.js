@@ -1,4 +1,3 @@
-// models/unenrollmentRequest.js
 const mongoose = require("mongoose");
 
 const unenrollmentRequestSchema = new mongoose.Schema({

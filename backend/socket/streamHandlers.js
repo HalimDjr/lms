@@ -1,4 +1,4 @@
-// socket/streamHandlers.js - Gestion des événements de streaming
+//- Gestion des événements de streaming
 const Course = require("../models/course");
 const { createNotification } = require("../controllers/notificationController");
 

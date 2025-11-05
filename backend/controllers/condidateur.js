@@ -1,4 +1,3 @@
-// controllers/instructorApplicationController.js
 const InstructorApplication = require("../models/instructorApplication");
 const User = require("../models/user");
 const Profile = require("../models/profile");
@@ -48,7 +47,6 @@ exports.submitApplication = async (req, res) => {
       school,
       contactNumber,
     } = req.body;
-    // Vérifier si tous les champs requis sont présents
     if (
       !firstName ||
       !lastName ||
@@ -143,7 +141,6 @@ exports.submitApplication = async (req, res) => {
 
     // Envoyer une notification à tous les administrateurs
     try {
-      // Trouver tous les administrateurs
       const admins = await User.find({ accountType: "Admin" });
 
       if (admins && admins.length > 0) {
@@ -170,7 +167,7 @@ exports.submitApplication = async (req, res) => {
         "Erreur lors de l'envoi des notifications aux administrateurs:",
         error
       );
-      // Ne pas bloquer la création de la candidature si les notifications échouent
+      
     }
 
     res.status(201).json({
@@ -188,7 +185,7 @@ exports.submitApplication = async (req, res) => {
   }
 };
 
-// Obtenir toutes les candidatures (pour l'admin)
+// Obtenir toutes les candidatures
 exports.getAllApplications = async (req, res) => {
   try {
     const { status } = req.query;
@@ -351,7 +348,6 @@ exports.updateApplicationStatus = async (req, res) => {
       });
 
       // Envoyer un email avec les identifiants
-      // When sending email after accepting application
       try {
         await mailSender(
           application.email,
@@ -369,7 +365,6 @@ exports.updateApplicationStatus = async (req, res) => {
         );
       } catch (error) {
         console.error("Failed to send acceptance email:", error);
-        // Still continue with the process even if email fails
       }
     } else if (status === "Refusé" && application.status !== "Refusé") {
       // Envoyer un email de refus
@@ -385,7 +380,6 @@ exports.updateApplicationStatus = async (req, res) => {
         );
       } catch (error) {
         console.error("Erreur lors de l'envoi de l'email:", error);
-        // Ne pas bloquer la mise à jour si l'email échoue
       }
     }
 

@@ -7,9 +7,7 @@ import { endpoints } from "../apis";
 const { SIGNUP_API, LOGIN_API, RESETPASSTOKEN_API, RESETPASSWORD_API } =
   endpoints;
 
-// ✅ **Suppression de la fonction `sendOtp` et de `SENDOTP_API`**
-
-// ================ sign Up (Sans OTP) ================
+// ================ sign Up ================
 export function signUp(
   accountType,
   firstName,

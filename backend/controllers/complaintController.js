@@ -1,4 +1,3 @@
-// controllers/complaintController.js
 const Complaint = require("../models/complaint");
 const User = require("../models/user");
 const { createNotification } = require("./notificationController");
@@ -25,7 +24,7 @@ exports.submitComplaint = async (req, res) => {
       attachments: attachments || [],
     });
 
-    // Trouver tous les administrateurs
+
     const admins = await User.find({ accountType: "Admin" });
 
     // Envoyer une notification à chaque administrateur
@@ -87,7 +86,6 @@ exports.getUserComplaints = async (req, res) => {
 // Obtenir toutes les réclamations (admin)
 exports.getAllComplaints = async (req, res) => {
   try {
-    // Vérifier que l'utilisateur est un administrateur
     if (req.user.accountType !== "Admin") {
       return res.status(403).json({
         success: false,
@@ -113,12 +111,10 @@ exports.getAllComplaints = async (req, res) => {
   }
 };
 
-// Traiter une réclamation (admin)
+// Traiter une réclamation
 exports.processComplaint = async (req, res) => {
   try {
     const { complaintId, status, adminResponse } = req.body;
-
-    // Vérifier que l'utilisateur est un administrateur
     if (req.user.accountType !== "Admin") {
       return res.status(403).json({
         success: false,

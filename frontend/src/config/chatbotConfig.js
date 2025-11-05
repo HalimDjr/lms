@@ -1,4 +1,3 @@
-// Nouveau fichier: frontend/src/config/chatbotConfig.js
 export const chatbotConfig = {
   welcomeMessage:
     "Bonjour ! Je suis votre assistant virtuel. Comment puis-je vous aider aujourd'hui ?",

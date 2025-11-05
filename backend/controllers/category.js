@@ -42,13 +42,11 @@ exports.createCategory = async (req, res) => {
 // ================ get All Category ================
 exports.showAllCategories = async (req, res) => {
   try {
-    // get all category from DB
     const allCategories = await Category.find(
       {},
       { name: true, description: true }
     );
 
-    // return response
     res.status(200).json({
       success: true,
       data: allCategories,
@@ -205,7 +203,6 @@ exports.getCategoryPageDetails = async (req, res) => {
       .exec();
 
     // console.log('selectedCategory = ', selectedCategory)
-    // Handle the case when the category is not found
     if (!selectedCategory) {
       // console.log("Category not found.")
       return res
@@ -213,7 +210,6 @@ exports.getCategoryPageDetails = async (req, res) => {
         .json({ success: false, message: "Category not found" });
     }
 
-    // Handle the case when there are no courses
     if (selectedCategory.courses.length === 0) {
       // console.log("No courses found for the selected category.")
       return res.status(404).json({
@@ -238,8 +234,6 @@ exports.getCategoryPageDetails = async (req, res) => {
       })
       .exec();
 
-    //console.log("Different COURSE", differentCategory)
-    // Get top-selling courses across all categories
     const allCategories = await Category.find()
       .populate({
         path: "courses",

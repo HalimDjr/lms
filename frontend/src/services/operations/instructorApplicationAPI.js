@@ -1,4 +1,3 @@
-// frontend/src/services/operations/instructorApplicationAPI.js
 import { toast } from "react-hot-toast";
 import { apiConnector } from "../apiConnector";
 import { instructorApplicationEndpoints } from "../apis";
@@ -17,7 +16,6 @@ export const submitInstructorApplication = async (formData) => {
     const hasCV = formData.has("cv");
     console.log("CV présent dans formData:", hasCV);
 
-    // Ne pas inclure transformRequest dans les headers
     const response = await apiConnector(
       "POST",
       SUBMIT_APPLICATION_API,

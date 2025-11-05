@@ -1,4 +1,4 @@
-// backend/routes/notification.js
+
 const express = require("express");
 const {
   getNotifications,
@@ -17,6 +17,6 @@ const router = express.Router();
 
 router.get("/", auth, getNotifications);
 router.post("/mark-as-read", auth, markAsRead);
-router.put("/:notificationId/mark-read", auth, markOneAsRead); // Nouvelle route
+router.put("/:notificationId/mark-read", auth, markOneAsRead); 
 
 module.exports = router;

@@ -1,4 +1,3 @@
-// models/forumMessage.js
 const mongoose = require("mongoose");
 
 const forumMessageSchema = new mongoose.Schema(

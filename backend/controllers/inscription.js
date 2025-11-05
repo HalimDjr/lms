@@ -54,7 +54,6 @@ exports.enrollFreeCourse = async (req, res) => {
           .json({ success: false, message: "L'étudiant est déjà inscrit." });
       }
 
-      // Inscrire l'étudiant gratuitement
       await enrollStudent(course_id, userId);
 
       // Récupérer les informations de l'étudiant
@@ -245,8 +244,6 @@ exports.unenrollFromCourse = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-
-// controllers/unenrollmentController.js
 
 // ================ Demande de désinscription ================
 exports.requestUnenrollment = async (req, res) => {
@@ -565,9 +562,7 @@ exports.processUnenrollmentRequest = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-// Dans le fichier controllers/inscription.js, ajoutez ces nouvelles fonctions
-
-// Inscrire un étudiant à un cours (par l'admin)
+// Inscrire un étudiant à un cours 
 exports.enrollStudentToCourse = async (req, res) => {
   try {
     const { studentId, coursesId } = req.body;
@@ -786,8 +781,6 @@ exports.enrollMultipleStudentsToCourse = async (req, res) => {
     });
   }
 };
-
-// Dans controllers/inscription.js
 
 // Inscription par l'admin
 exports.enrollStudentToCourse = async (req, res) => {

@@ -1,4 +1,3 @@
-// Version alternative sans createAsyncThunk
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {

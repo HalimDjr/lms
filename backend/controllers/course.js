@@ -200,7 +200,7 @@ exports.getAllCourses = async (req, res) => {
         path: "instructor",
         select: "firstName lastName email image",
       })
-      .populate("category") // Populate la catégorie
+      .populate("category") 
       .exec();
 
     return res.status(200).json({
@@ -222,7 +222,6 @@ exports.getAllCourses = async (req, res) => {
 // ================ Get Course Details ================
 exports.getCourseDetails = async (req, res) => {
   try {
-    // get course ID
     const { courseId } = req.body;
 
     // find course details

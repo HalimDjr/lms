@@ -1,4 +1,3 @@
-// server.js - Fichier principal simplifié
 const { app, server } = require("./config/express");
 const { connectDB } = require("./config/database");
 const { cloudinaryConnect } = require("./config/cloudinary");

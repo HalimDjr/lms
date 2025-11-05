@@ -102,7 +102,7 @@ exports.getAllUsers = async (req, res) => {
       search = "",
       sortField = "firstName",
       sortDirection = "asc",
-      approvalFilter = "all", // Nouveau paramètre
+      approvalFilter = "all", 
     } = req.query;
 
     let query = {};
@@ -515,7 +515,7 @@ exports.exportUsersToPDF = async (req, res) => {
     });
   }
 };
-// Dans votre contrôleur backend
+
 exports.getInstructorStats = async (req, res) => {
   try {
     const totalInstructors = await User.countDocuments({
@@ -555,7 +555,6 @@ exports.getInstructorStats = async (req, res) => {
   }
 };
 
-// Dans votre contrôleur backend (adminController.js)
 exports.getStudentStats = async (req, res) => {
   try {
     const totalStudents = await User.countDocuments({ accountType: "Student" });

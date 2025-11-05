@@ -1,4 +1,4 @@
-// utils/fileSystem.js - Gestion des dossiers
+//- Gestion des dossiers
 const fs = require("fs-extra");
 const path = require("path");
 require("dotenv").config();
